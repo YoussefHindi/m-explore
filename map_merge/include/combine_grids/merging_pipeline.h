@@ -60,6 +60,12 @@ public:
   bool estimateTransforms(FeatureType feature = FeatureType::AKAZE,
                           double confidence = 1.0);
   nav_msgs::OccupancyGrid::Ptr composeGrids();
+////////////
+
+bool chk_grd =true;
+double conf_chkr=0;
+
+////////////////
 
   std::vector<geometry_msgs::Transform> getTransforms() const;
   template <typename InputIt>

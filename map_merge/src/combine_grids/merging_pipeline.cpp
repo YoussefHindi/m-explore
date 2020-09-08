@@ -84,6 +84,19 @@ bool MergingPipeline::estimateTransforms(FeatureType feature_type,
 
 #ifndef NDEBUG
   internal::writeDebugMatchingInfo(images_, image_features, pairwise_matches);
+	if(pairwise_matches[1].confidence<confidence && pairwise_matches[1].confidence>0)
+	{
+		chk_grd=true;
+		ROS_WARN("confidence lower than the set rate at %f executing recovery mode", pairwise_matches[1].confidence);
+		ROS_WARN("executing different matching algorithm");
+		conf_chkr= pairwise_matches[1].confidence;
+		   // return false;
+	}
+//	else if(pairwise_matches[1].confidence>confidence)
+	//{
+		//chk_grd=false;
+		   // return false;
+//	}
 #endif
 
   /* use only matches that has enough confidence. leave out matches that are not
@@ -201,7 +214,7 @@ nav_msgs::OccupancyGrid::Ptr MergingPipeline::composeGrids()
 
   // set grid origin to its centre
   result->info.origin.position.x =
-      -(result->info.width / 2.0) * double(result->info.resolution);
+     -(result->info.width / 2.0) * double(result->info.resolution);
   result->info.origin.position.y =
       -(result->info.height / 2.0) * double(result->info.resolution);
   result->info.origin.orientation.w = 1.0;

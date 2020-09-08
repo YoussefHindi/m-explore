@@ -42,6 +42,8 @@
 #include <ros/console.h>
 #include <tf2_geometry_msgs/tf2_geometry_msgs.h>
 
+#include <combine_grids/merging_pipeline.h>
+
 namespace map_merge
 {
 MapMerge::MapMerge() : subscriptions_size_(0)
@@ -186,6 +188,7 @@ void MapMerge::mapMerging()
 
 void MapMerge::poseEstimation()
 {
+
   ROS_DEBUG("Grid pose estimation started.");
   std::vector<nav_msgs::OccupancyGridConstPtr> grids;
   grids.reserve(subscriptions_size_);
@@ -200,8 +203,72 @@ void MapMerge::poseEstimation()
   std::lock_guard<std::mutex> lock(pipeline_mutex_);
   pipeline_.feed(grids.begin(), grids.end());
   // TODO allow user to change feature type
+  
+ // pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
+                            //   confidence_threshold_);
+ ////////////////////////////////////////////////////////////////////////
+ static int i=0;
+  if (pipeline_.chk_grd)
+  {
+  	if (i==0)
+  		{
+  		  		ROS_INFO("Using ORB feature matching");
+ 		 pipeline_.estimateTransforms(combine_grids::FeatureType::ORB, confidence_threshold_);
+ 		 i++;
+ 		  if (pipeline_.conf_chkr>confidence_threshold_)
+ 		  { 
+ 		  	i=0;
+ 		  	//pipeline_.chk_grd=false;
+ 		  }
+  	//	ROS_INFO("map merge cpp is excuted1111"); //write orb recovery
+  		}
+  		
+  	else if (i==1)
+  	{	
+  		ROS_INFO("Using SURF feature matching");
+  		 pipeline_.estimateTransforms(combine_grids::FeatureType::SURF, confidence_threshold_);
+  		   		i++;
+  		 if (pipeline_.conf_chkr>confidence_threshold_)
+ 		  { 
+ 		  	i=1;
+ 		//  	pipeline_.chk_grd=false;
+ 		  }
+  	//	ROS_INFO("map merge cpp is excuted2222"); //write surf recovery
+  	}
+  	else if(i==2)
+  	{
+  		  ROS_INFO("Using AKAZE feature matching");
+  	 pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE, confidence_threshold_);
+  	 i++;
+  	 if (pipeline_.conf_chkr>confidence_threshold_)
+ 		  { 
+ 		  	i=2;
+ 		  //	pipeline_.chk_grd=false;
+ 		  }
+  	//	ROS_INFO("map merge cpp is excuted333"); //write akaze recovery
+
+  	}
+  	else if(i==3)
+  	{
+  		ROS_WARN( "matching algorithms is not sufficient lowering confidence 10 percent" );
+  		   confidence_threshold_=confidence_threshold_-(confidence_threshold_*0.1);
+  		    ROS_WARN("New confidence theshhold = %f ", confidence_threshold_ ); 
+  		    pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE, confidence_threshold_);
+  		    if (confidence_threshold_<0.35)
+  		    {
+  		    	 confidence_threshold_=confidence_threshold_+(confidence_threshold_*0.1);
+  		    }
+  		//ROS_INFO("map merge cpp is excuted444"); //write akaze recovery
+  		i=0;
+  	}
+  }  
+  else 
+  {
   pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
                                confidence_threshold_);
+  }       
+                               
+ ////////////////////////////////////////////////////////////////////////
 }
 
 void MapMerge::fullMapUpdate(const nav_msgs::OccupancyGrid::ConstPtr& msg,

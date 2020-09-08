@@ -84,6 +84,7 @@ static inline void writeDebugMatchingInfo(
               << "confidence: " << match_info.confidence << std::endl
               << match_info.H << std::endl;
     cv::Mat img;
+    
     // draw all matches
     cv::drawMatches(images[size_t(match_info.src_img_idx)],
                     image_features[size_t(match_info.src_img_idx)].keypoints,

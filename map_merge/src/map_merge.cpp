@@ -204,71 +204,162 @@ void MapMerge::poseEstimation()
   pipeline_.feed(grids.begin(), grids.end());
   // TODO allow user to change feature type
   
- // pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
-                            //   confidence_threshold_);
+  //pipeline_.estimateTransforms(combine_grids::FeatureType::ORB,
+    //                           confidence_threshold_);
  ////////////////////////////////////////////////////////////////////////
+ 
  static int i=0;
   if (pipeline_.chk_grd)
   {
-  	if (i==0)
+ /* 	if (i==0)
   		{
-  		  		ROS_INFO("Using ORB feature matching");
+  		 ROS_INFO("Using ORB feature matching confidence set %f",confidence_threshold_ );
  		 pipeline_.estimateTransforms(combine_grids::FeatureType::ORB, confidence_threshold_);
- 		 i++;
- 		  if (pipeline_.conf_chkr>confidence_threshold_)
+ 		 	i++;
+ 		 	ROS_INFO("conf chkr, conf threshold %f, %f", pipeline_.conf_chkr, confidence_threshold_  );
+ 		  if (pipeline_.conf_chkr>confidence_threshold_ && pipeline_.conf_chkr > 0)
  		  { 
  		  	i=0;
- 		  	//pipeline_.chk_grd=false;
+ 	ROS_INFO("iii %d",i);											
  		  }
-  	//	ROS_INFO("map merge cpp is excuted1111"); //write orb recovery
   		}
-  		
-  	else if (i==1)
+  		*/
+  	 if (i==0)
   	{	
-  		ROS_INFO("Using SURF feature matching");
+  		ROS_INFO("Using SURF feature matching confidence set %f",confidence_threshold_ );
   		 pipeline_.estimateTransforms(combine_grids::FeatureType::SURF, confidence_threshold_);
   		   		i++;
+  		   				  	ROS_INFO("conf chkr, conf threshold %f, %f", pipeline_.conf_chkr, confidence_threshold_  );
   		 if (pipeline_.conf_chkr>confidence_threshold_)
  		  { 
- 		  	i=1;
- 		//  	pipeline_.chk_grd=false;
+ 		  	i=0;
+ 		  	ROS_INFO("iii %d",i );
  		  }
-  	//	ROS_INFO("map merge cpp is excuted2222"); //write surf recovery
   	}
-  	else if(i==2)
+  	else if(i==1)
   	{
-  		  ROS_INFO("Using AKAZE feature matching");
+  		  ROS_INFO("Using AKAZE feature matching confidence set %f",confidence_threshold_ );
   	 pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE, confidence_threshold_);
   	 i++;
+  	  		  	ROS_INFO("conf chkr, conf threshold %f, %f", pipeline_.conf_chkr, confidence_threshold_  );
   	 if (pipeline_.conf_chkr>confidence_threshold_)
  		  { 
- 		  	i=2;
+ 		  	i=1;
+ 		  	ROS_INFO("iii %d",i );
  		  //	pipeline_.chk_grd=false;
  		  }
   	//	ROS_INFO("map merge cpp is excuted333"); //write akaze recovery
 
   	}
-  	else if(i==3)
+  	else if(i==2)
   	{
   		ROS_WARN( "matching algorithms is not sufficient lowering confidence 10 percent" );
   		   confidence_threshold_=confidence_threshold_-(confidence_threshold_*0.1);
   		    ROS_WARN("New confidence theshhold = %f ", confidence_threshold_ ); 
-  		    pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE, confidence_threshold_);
-  		    if (confidence_threshold_<0.35)
+  
+  		    if (confidence_threshold_<0.3)
   		    {
   		    	 confidence_threshold_=confidence_threshold_+(confidence_threshold_*0.1);
+  		    	 ROS_WARN("increasing confidence "); 
   		    }
-  		//ROS_INFO("map merge cpp is excuted444"); //write akaze recovery
+ 
   		i=0;
   	}
+  	
   }  
   else 
   {
+  	if (i==1)
+  		{
+  		  		
   pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
                                confidence_threshold_);
+                      ROS_INFO("a");               
+         }
+      else if (i==0)
+  		{
+  		  		
+  pipeline_.estimateTransforms(combine_grids::FeatureType::SURF,
+                               confidence_threshold_);
+                            ROS_INFO("b");               
+         }
+       /*  if (i==2)
+  		{
+  		  		
+  pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
+                               confidence_threshold_);
+                           ROS_INFO("c");                
+         }
+                 ROS_INFO("elseeee");       
+                 */        
   }       
-                               
+  if (pipeline_.chk_grd2)
+  {
+ 
+  	 if (i==0)
+  	{	
+  		ROS_INFO("Using SURF feature matching confidence set %f",confidence_threshold_ );
+  		 pipeline_.estimateTransforms(combine_grids::FeatureType::SURF, confidence_threshold_);
+  		   		i++;
+  		   				  	ROS_INFO("conf chkr, conf threshold %f, %f", pipeline_.conf_chkr2, confidence_threshold_  );
+  		 if (pipeline_.conf_chkr2>confidence_threshold_)
+ 		  { 
+ 		  	i=0;
+ 		  	ROS_INFO("iii %d",i );
+ 		  }
+  	}
+  	else if(i==1)
+  	{
+  		  ROS_INFO("Using AKAZE feature matching confidence set %f",confidence_threshold_ );
+  	 pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE, confidence_threshold_);
+  	 i++;
+  	  		  	ROS_INFO("conf chkr, conf threshold %f, %f", pipeline_.conf_chkr2, confidence_threshold_  );
+  	 if (pipeline_.conf_chkr2>confidence_threshold_)
+ 		  { 
+ 		  	i=1;
+ 		  	ROS_INFO("iii %d",i );
+ 		  //	pipeline_.chk_grd=false;
+ 		  }
+  	//	ROS_INFO("map merge cpp is excuted333"); //write akaze recovery
+
+  	}
+  	else if(i==2)
+  	{
+  		ROS_WARN( "matching algorithms is not sufficient lowering confidence 10 percent" );
+  		   confidence_threshold_=confidence_threshold_-(confidence_threshold_*0.1);
+  		    ROS_WARN("New confidence theshhold = %f ", confidence_threshold_ ); 
+  
+  		    if (confidence_threshold_<0.3)
+  		    {
+  		    	 confidence_threshold_=confidence_threshold_+(confidence_threshold_*0.1);
+  		    	 ROS_WARN("increasing confidence "); 
+  		    }
+ 
+  		i=0;
+  	}
+  	
+  }  
+  else 
+  {
+  	if (i==1)
+  		{
+  		  		
+  pipeline_.estimateTransforms(combine_grids::FeatureType::AKAZE,
+                               confidence_threshold_);
+                      ROS_INFO("a");               
+         }
+      else if (i==0)
+  		{
+  		  		
+  pipeline_.estimateTransforms(combine_grids::FeatureType::SURF,
+                               confidence_threshold_);
+                            ROS_INFO("b");               
+         }
+     
+  }       
+                        
  ////////////////////////////////////////////////////////////////////////
+
 }
 
 void MapMerge::fullMapUpdate(const nav_msgs::OccupancyGrid::ConstPtr& msg,

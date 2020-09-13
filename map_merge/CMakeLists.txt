@@ -11,8 +11,25 @@ find_package(catkin REQUIRED COMPONENTS
   tf2_geometry_msgs
 )
 
+#set(OpenCV_DIR /usr/local/share/OpenCV)
+set(OpenCV_DIR /usr/local/lib)
+
+#set(OpenCV_LIB /usr/local/lib/python2.7/dist-packages)
+set(OpenCV_LIB /usr/local/include/opencv2)
+
+set(OpenCV_INCLUDE_DIRS
+  /usr/local/include
+  /usr/local/include/opencv2
+)
+
+set(OpenCV_LIB_DIR
+  /usr/local/lib
+)
+
+
 find_package(Boost REQUIRED COMPONENTS thread)
 
+find_package(OpenCV 3.4.5 REQUIRED)
 # OpenCV is required for merging without initial positions
 find_package(OpenCV 3 REQUIRED)
 if("${OpenCV_VERSION}" VERSION_LESS "3.0")
@@ -48,8 +65,11 @@ include_directories(
   ${catkin_INCLUDE_DIRS}
   ${Boost_INCLUDE_DIRS}
   ${OpenCV_INCLUDE_DIRS}
+ #${OpenCV_DIR}
   include
 )
+
+include_directories(SYSTEM ${OpenCV_DIR} ${catkin_INCLUDE_DIRS})
 
 # we want static linking for now
 add_library(combine_grids STATIC
@@ -58,7 +78,12 @@ add_library(combine_grids STATIC
   src/combine_grids/merging_pipeline.cpp
 )
 add_dependencies(combine_grids ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
-target_link_libraries(combine_grids ${OpenCV_LIBRARIES})
+#target_link_libraries(combine_grids ${OpenCV_LIBRARIES})
+
+target_link_libraries(combine_grids ${OpenCV_LIB})
+
+#rget_link_libraries(${PROJECT_NAME} ${Boost_LIBRARIES} ${OpenCV_LIB} ${catkin_LIBRARIES})
+
 
 add_executable(map_merge
   src/map_merge.cpp
@@ -70,6 +95,7 @@ src/read.cpp)
 add_dependencies(map_merge ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(read ${catkin_LIBRARIES})
 target_link_libraries(map_merge combine_grids ${catkin_LIBRARIES})
+
 
 #############
 ## Install ##

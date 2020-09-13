@@ -64,6 +64,8 @@ public:
 
 bool chk_grd =true;
 double conf_chkr=0;
+bool chk_grd2 =true;
+double conf_chkr2=0;
 
 ////////////////
 

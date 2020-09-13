@@ -56,6 +56,9 @@ chooseFeatureFinder(FeatureType type)
       return cv::makePtr<cv::detail::OrbFeaturesFinder>();
     case FeatureType::SURF:
       return cv::makePtr<cv::detail::SurfFeaturesFinder>();
+    //case FeatureType::SIFT:
+      //return cv::makePtr<cv::detail::SiftFeaturesFinder>();
+   
   }
 }
 

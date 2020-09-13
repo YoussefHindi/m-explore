@@ -84,6 +84,22 @@ bool MergingPipeline::estimateTransforms(FeatureType feature_type,
 
 #ifndef NDEBUG
   internal::writeDebugMatchingInfo(images_, image_features, pairwise_matches);
+  ROS_WARN("confindenceeeeee %f",pairwise_matches[3].confidence);
+    ROS_WARN("confindenceeeeee %f",pairwise_matches[2].confidence);
+      ROS_WARN("confindenceeeeee %f",pairwise_matches[0].confidence);
+  if(pairwise_matches[2].confidence<confidence && pairwise_matches[2].confidence>0)
+  {
+  	chk_grd2=true;
+		ROS_WARN("confidence lower than the set rate at %f executing recovery mode", pairwise_matches[2].confidence);
+		ROS_WARN("executing different matching algorithm");
+		conf_chkr2= pairwise_matches[2].confidence;
+  }
+  else 
+	{
+				conf_chkr2= pairwise_matches[2].confidence;
+			chk_grd2=false;
+	}
+  
 	if(pairwise_matches[1].confidence<confidence && pairwise_matches[1].confidence>0)
 	{
 		chk_grd=true;
@@ -91,6 +107,11 @@ bool MergingPipeline::estimateTransforms(FeatureType feature_type,
 		ROS_WARN("executing different matching algorithm");
 		conf_chkr= pairwise_matches[1].confidence;
 		   // return false;
+	}
+	else 
+	{
+				conf_chkr= pairwise_matches[1].confidence;
+			chk_grd=false;
 	}
 //	else if(pairwise_matches[1].confidence>confidence)
 	//{
